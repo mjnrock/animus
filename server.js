@@ -8,16 +8,26 @@ const app = next({ dev });
 const handle = app.getRequestHandler();
 const FileSystem = require(`fs`);
 
-const data = {
-    num: 0
-};
-const dataTick = () => {
-    data.num += 1;
-}
+//! This all works! :)
+// const data = {
+//     num: 0,
+//     files: []
+// };
+// const dataTick = () => {
+//     data.num += 1;
+    
+//     FileSystem.readFile(`./modules/file-loader/test.txt`, (err, d) => {
+//         if(err) {
+//             throw err; 
+//         }
 
-setInterval(() => {
-    dataTick();
-}, 100);
+//         data.files.push(d.toString());
+//     });
+// }
+
+// setInterval(() => {
+//     dataTick();
+// }, 500);
 
 app
     .prepare()
