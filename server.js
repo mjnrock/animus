@@ -1,4 +1,4 @@
-import Main from "./modules/file-loader/Main";
+import * as Animus from "./modules/animus/package";
 
 const express = require(`express`);
 const next = require(`next`);
@@ -8,7 +8,6 @@ const { parse } = require('url');
 const dev = process.env.NODE_ENV !== `production`;
 const app = next({ dev });
 const handle = app.getRequestHandler();
-const FileSystem = require(`fs`);
 
 //! This all works! :)
 // const data = {
@@ -33,6 +32,9 @@ const FileSystem = require(`fs`);
 //     dataTick();
 // }, 500);
 
+const game = Animus.init({});
+console.log(game.file._animus);
+
 app
     .prepare()
     .then(() => {        
@@ -55,7 +57,9 @@ app
             const parsedUrl = parse(req.url, true);
             const { pathname, query } = parsedUrl;
 
-            app.render(req, res, "/main", data);
+            console.log(Animus);
+
+            app.render(req, res, "/main", Animus);
         });
         
         server.get("/api/validate", (req, res) => {
