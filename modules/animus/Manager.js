@@ -14,7 +14,15 @@ class Manager {
     }
 
     Attach(name, handler) {
-        this._handlers[ name ] = handler;
+        if(Array.isArray(name)) {
+            for(let i in name) {
+                let handle = name[ i ];
+
+                this._handlers[ handle[0] ] = handle[1];
+            }
+        } else {
+            this._handlers[ name ] = handler;
+        }
 
         return this;
     }
@@ -29,7 +37,9 @@ class Manager {
         return Message(this.GetName(), type, data);
     }
     Receive(message) {
-        if(this._handlers[ message.type ] === "function") {
+        console.log(this.GetName(), message);
+
+        if(typeof this._handlers[ message.type ] === "function") {
             this._handlers[ message.type ](message, this._animus);
         }
 

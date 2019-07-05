@@ -1,4 +1,4 @@
-import * as Animus from "./modules/animus/package";
+import Animus from "./modules/animus/package";
 
 const express = require(`express`);
 const next = require(`next`);
@@ -32,8 +32,10 @@ const handle = app.getRequestHandler();
 //     dataTick();
 // }, 500);
 
-const game = Animus.init({});
-console.log(game.file._animus);
+const game = Animus._fn.init({});
+game.message.Receive(Animus.Message("file", "bob", "cat"));
+game.message.Receive(Animus.Message("file", "cat", "cheese"));
+game.message.Dispatch();
 
 app
     .prepare()

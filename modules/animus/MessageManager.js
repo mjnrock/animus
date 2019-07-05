@@ -1,5 +1,5 @@
 import Manager from "./Manager";
-import Message from "./Message";
+import FileSystemManager from "./FileSystemManager";
 
 class MessageManager extends Manager {
     constructor(animus) {
@@ -19,15 +19,15 @@ class MessageManager extends Manager {
     Dispatch() {
         let length = this._queue.length;
 
-        for(let i = length; i >= 0; i--) {
+        for(let i = length - 1; i >= 0; i--) {
             let message = this._queue.pop();
 
             switch(message.handler) {
-                case MessageManager.GetNamespace():
-                    this._animus[ MessageManager.GetNamespace() ].MessageManager.Receive(message);
-                    break;
+                // case MessageManager.GetNamespace():
+                //     this._animus[ MessageManager.GetNamespace() ].Receive(message);
+                //     break;
                 case FileSystemManager.GetNamespace():
-                    this._animus[ FileSystemManager.GetNamespace() ].FileSystemManager.Receive(message);
+                    this._animus[ FileSystemManager.GetNamespace() ].Receive(message);
                     break;
                 default:
                     break;
