@@ -6,7 +6,10 @@ class Manager {
         this._uuid = uuidv4();
 
         this._animus = animus;
+
+        this._queue = {};
         this._handlers = {};
+        this._state = {};
     }
 
     GetName() {

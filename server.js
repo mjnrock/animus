@@ -32,7 +32,7 @@ const handle = app.getRequestHandler();
 //     dataTick();
 // }, 500);
 
-const game = Animus._fn.init({});
+const game = Animus._.init({});
 game.message.Receive(Animus.Message("file", "bob", "cat"));
 game.message.Receive(Animus.Message("file", "cat", "cheese"));
 game.message.Dispatch();
