@@ -1,3 +1,5 @@
+import Main from "./modules/file-loader/Main";
+
 const express = require(`express`);
 const next = require(`next`);
 const expressWS = require("express-ws");
@@ -16,13 +18,15 @@ const FileSystem = require(`fs`);
 // const dataTick = () => {
 //     data.num += 1;
     
-//     FileSystem.readFile(`./modules/file-loader/test.txt`, (err, d) => {
-//         if(err) {
-//             throw err; 
-//         }
+//     // FileSystem.readFile(`./modules/file-loader/test.txt`, (err, d) => {
+//     //     if(err) {
+//     //         throw err; 
+//     //     }
 
-//         data.files.push(d.toString());
-//     });
+//     //     data.files.push(d.toString());
+//     // });
+
+//     console.log(data);
 // }
 
 // setInterval(() => {
@@ -36,20 +40,10 @@ app
             ws = expressWS(server),
             eApp = ws.app;
 
-        // eApp.get("/file", (req, res) => {        
-        //     res.setHeader("Access-Control-Allow-Origin", "*");
-        //     res.set("Content-Type", "Application/text");
-
-        //     res.sendfile(`${ __dirname }/modules/file-loader/test.txt`);
-
-        //     FileSystem.readFile(`${ __dirname }/modules/file-loader/test.txt`, (err, data) => {
-        //         if(err) {
-        //             throw err; 
-        //         }
-                
-        //         res.send(data.toString());
-        //     });
-        // });
+        server.get("/file", (req, res) => {        
+            res.setHeader("Access-Control-Allow-Origin", "*");
+            res.set("Content-Type", "Application/text");
+        });
 
         server.get(`/p/:id`, (req, res) => {
             const actualPage = `/post`;
@@ -64,7 +58,7 @@ app
             app.render(req, res, "/main", data);
         });
         
-        server.get("/validate", (req, res) => {
+        server.get("/api/validate", (req, res) => {
             res.setHeader("Access-Control-Allow-Origin", "*");
             res.set("Content-Type", "Application/json");
             

@@ -1,14 +1,16 @@
 import FileSystem from "fs";
 
-class Main {
-    constructor() {
-        FileSystem.readFile(`./modules/file-loader/test.txt`, (err, data) => {
-            if(err) {
-                throw err; 
-            }
-            console.log(data.toString());
-        });
+export default async function Main(path, isRelative = false) {
+    // FileSystem.readFile(`${ __dirname }/modules/file-loader/test.txt`, (err, d) => {
+    if(isRelative === true) {
+        path = `${ __dirname }/${ path }`;
     }
-}
 
-export default Main;
+    FileSystem.readFile(path, (err, d) => {
+        if(err) {
+            throw err; 
+        }
+
+        return d.toString();
+    });
+};
