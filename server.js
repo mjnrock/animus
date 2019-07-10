@@ -1,13 +1,32 @@
+import APIModule from "./api/API";
 import Animus from "./modules/animus/package";
 
 const express = require(`express`);
 const next = require(`next`);
+const mssql = require("mssql");
 const expressWS = require("express-ws");
 const { parse } = require('url');
 
 const dev = process.env.NODE_ENV !== `production`;
 const app = next({ dev });
 const handle = app.getRequestHandler();
+
+const config = {
+	user: "fuzzyknights",
+	password: "fuzzyknights",
+	server: "localhost",
+	database: "FuzzyKnights"
+};
+const TSQLPool = new mssql.ConnectionPool(config)
+	.connect()
+	.then(pool => {
+		console.log(`Connected to: [Server: ${ config.server }, Database: ${ config.database }]`);
+
+		return pool;
+	})
+	.catch(err => console.log("Database Connection Failed! Bad Config: ", err));
+	
+const API = new APIModule(mssql, TSQLPool, config);
 
 //! This all works! :)
 // const data = {
@@ -76,7 +95,20 @@ app
                     child3: Date.now() + (Math.random() * 1000)
                 }
             }));
-        });
+		});
+		
+		server.get("/api/*", async (req, res) => {
+			try {
+				res.setHeader("Content-Type", "application/json");
+		
+				let result = await API.Handle(req, res);
+		
+				res.json(result);
+			} catch (e) {
+				res.status(500);
+				res.send(e.message);
+			}
+		});
 
         server.get(`*`, (req, res) => {
             return handle(req, res);
