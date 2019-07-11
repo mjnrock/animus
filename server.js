@@ -21,6 +21,8 @@ const config = {
 	database: "FuzzyKnights",
 	schema: "ImageDB"
 };
+
+//!	Once the Database connections, it should hold every table under the Schema in its this._context and create a new Table() for each, pushing the data into Table's this._data
 let DB = new Database(mssql, config);
 let tbl = new Table(DB, "ImageDB", "ReferenceType");
 
