@@ -1,6 +1,9 @@
 import APIModule from "./api/API";
 import Animus from "./modules/animus/package";
 
+import Database from "./modules/database/Database";
+import Table from "./modules/database/Table";
+
 const express = require(`express`);
 const next = require(`next`);
 const mssql = require("mssql");
@@ -15,18 +18,33 @@ const config = {
 	user: "fuzzyknights",
 	password: "fuzzyknights",
 	server: "localhost",
-	database: "FuzzyKnights"
+	database: "FuzzyKnights",
+	schema: "ImageDB"
 };
-const TSQLPool = new mssql.ConnectionPool(config)
-	.connect()
-	.then(pool => {
-		console.log(`Connected to: [Server: ${ config.server }, Database: ${ config.database }]`);
+let DB = new Database(mssql, config);
+let tbl = new Table(DB, "ImageDB", "ReferenceType");
 
-		return pool;
-	})
-	.catch(err => console.log("Database Connection Failed! Bad Config: ", err));
+tbl.Select({ where: "ReferenceTypeID=2", callback: (data) => console.log(data) });
+tbl.MetaData();
+
+setTimeout(() => console.log(tbl._columns), 7000)
+
+// (async () => {
+// 	let t = await DB.Pull("ReferenceType", { where: `ReferenceTypeID = 2` });
 	
-const API = new APIModule(mssql, TSQLPool, config);
+// 	console.log(await t._context)
+// })()
+
+// const TSQLPool = new mssql.ConnectionPool(config)
+// 	.connect()
+// 	.then(pool => {
+// 		console.log(`Connected to: [Server: ${ config.server }, Database: ${ config.database }]`);
+
+// 		return pool;
+// 	})
+// 	.catch(err => console.log("Database Connection Failed! Bad Config: ", err));
+	
+// const API = new APIModule(mssql, TSQLPool, config);
 
 //! This all works! :)
 // const data = {
