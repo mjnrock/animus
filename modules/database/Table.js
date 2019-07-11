@@ -16,6 +16,9 @@ class Table {
 		};
 
 		this.MetaData();
+		this.Select({
+			callback: (data) => this._data = data
+		});
 
 		//? This is currently sending data to Database._context; consider moving
 		// this._database.Pull(table, { schema, callback: () })

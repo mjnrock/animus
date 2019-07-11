@@ -25,9 +25,8 @@ let DB = new Database(mssql, config);
 let tbl = new Table(DB, "ImageDB", "ReferenceType");
 
 tbl.Select({ where: "ReferenceTypeID=2", callback: (data) => console.log(data) });
-tbl.MetaData();
 
-setTimeout(() => console.log(tbl._columns), 7000)
+setTimeout(() => console.log(tbl), 7000)
 
 // (async () => {
 // 	let t = await DB.Pull("ReferenceType", { where: `ReferenceTypeID = 2` });
