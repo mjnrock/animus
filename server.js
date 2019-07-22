@@ -27,6 +27,13 @@ let DB = new Database(mssql, config);
 let tbl = new Table(DB, "ImageDB", "ReferenceType");
 
 tbl.Select({ where: "ReferenceTypeID=2", callback: (data) => console.log(data) });
+DB.Query(`
+	SELECT
+		*
+	FROM
+		ImageDB.[Image] i
+		CROSS APPLY ImageDB.Explode(i.Tags, ',') ca
+`, (data) => console.log(data));
 
 setTimeout(() => console.log(tbl), 7000)
 
