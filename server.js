@@ -24,21 +24,17 @@ const config = {
 
 //!	Once the Database connections, it should hold every table under the Schema in its this._context and create a new Table() for each, pushing the data into Table's this._data
 let DB = new Database(mssql, config);
-let tbl = new Table(DB, "ImageDB", "ReferenceType");
+let tbl = new Table(DB, "ImageDB", "Camera");
 
-tbl.Select({ where: "ReferenceTypeID=2", callback: (data) => console.log(data) });
-DB.Query(`
-	SELECT
-		*
-	FROM
-		ImageDB.[Image] i
-		CROSS APPLY ImageDB.Explode(i.Tags, ',') ca
-`, (data) => console.log(data));
-
-setTimeout(() => console.log(tbl), 7000)
+setTimeout(() => {
+	tbl.Update([
+		[ "X", 0 ],
+		[ "Pitch" , 0 ]
+	], { callback: (data) => console.log(data) });
+}, 2000)
 
 // (async () => {
-// 	let t = await DB.Pull("ReferenceType", { where: `ReferenceTypeID = 2` });
+// 	let t = await DB.Pull("Camera", { where: `CameraID = 2` });
 	
 // 	console.log(await t._context)
 // })()

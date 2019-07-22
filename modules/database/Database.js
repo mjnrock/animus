@@ -92,6 +92,27 @@ class Database {
 
 		return await this;
 	}
+
+	static SQLifyInput(input, colData) {
+		if(typeof colData !== "boolean") {
+			if(colData.meta.isString === 1) {
+				return [
+					colData.name,
+					`'${ input }'`
+				];
+			} else if(input === null) {
+				return [
+					colData.name,
+					`NULL`
+				];
+			} else {
+				return [
+					colData.name,
+					input
+				];
+			}
+		}
+	}
 }
 
 export default Database;
