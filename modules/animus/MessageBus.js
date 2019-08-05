@@ -1,10 +1,5 @@
-import Manager from "./Manager";
-import FileSystemManager from "./FileSystemManager";
-
-class MessageManager extends Manager {
-    constructor(animus) {
-        super(MessageManager.GetNamespace(), animus);
-        
+class MessageBus {
+    constructor() {        
         this._queue = [];
     }
 
@@ -23,8 +18,8 @@ class MessageManager extends Manager {
             let message = this._queue.pop();
 
             switch(message.handler) {
-                // case MessageManager.GetNamespace():
-                //     this._animus[ MessageManager.GetNamespace() ].Receive(message);
+                // case MessageBus.GetNamespace():
+                //     this._animus[ MessageBus.GetNamespace() ].Receive(message);
                 //     break;
                 case FileSystemManager.GetNamespace():
                     this._animus[ FileSystemManager.GetNamespace() ].Receive(message);
@@ -42,4 +37,4 @@ class MessageManager extends Manager {
     }
 }
 
-export default MessageManager;
+export default MessageBus;
