@@ -44,6 +44,13 @@ class Query {
 }
 
 Query.Enums = {
+    // SetOptions: {
+    //     IdentityInsertOn: "SET IDENTITY_INSERT ON;",
+    //     IdentityInsertOff: "SET IDENTITY_INSERT OFF;",
+
+    //     NoCountOn: "SET NOCOUNT ON;",
+    //     NoCountOff: "SET NOCOUNT OFF;",
+    // },
     DatabaseType: {
         MSSQL: "MSSQL",
         Oracle: "ORACLE",
@@ -51,7 +58,7 @@ Query.Enums = {
     }
 };
 
-class Read extends Query {
+class QueryRead extends Query {
     constructor(db, schema = "dbo") {
         super(db, {
             select: null,
@@ -137,20 +144,20 @@ class Read extends Query {
     }
 
     InnerJoin(table, lcol, rcol, schema = null) {
-        return this.Join(Read.Enums.JoinType.Inner, table, lcol, rcol, schema);
+        return this.Join(QueryRead.Enums.JoinType.Inner, table, lcol, rcol, schema);
     }
     LeftJoin(table, lcol, rcol, schema = null) {
-        return this.Join(Read.Enums.JoinType.Inner, table, lcol, rcol, schema);
+        return this.Join(QueryRead.Enums.JoinType.Inner, table, lcol, rcol, schema);
     }
     RightJoin(table, lcol, rcol, schema = null) {
-        return this.Join(Read.Enums.JoinType.Inner, table, lcol, rcol, schema);
+        return this.Join(QueryRead.Enums.JoinType.Inner, table, lcol, rcol, schema);
     }
     OuterJoin(table, lcol, rcol, schema = null) {
-        return this.Join(Read.Enums.JoinType.Inner, table, lcol, rcol, schema);
+        return this.Join(QueryRead.Enums.JoinType.Inner, table, lcol, rcol, schema);
     }
 }
 
-Read.Enums = {
+QueryRead.Enums = {
     ...Query.Enums,
     JoinType: {
         Inner: "INNER JOIN",
@@ -161,7 +168,7 @@ Read.Enums = {
 };
 
 
-class Create extends Query {
+class QueryCreate extends Query {
     constructor(db, schema = "dbo") {
         super(db, {
             table: null,
@@ -232,6 +239,6 @@ class Create extends Query {
 
 export default {
     Query,
-    Read,
-    Create
+    QueryRead,
+    QueryCreate
 };
