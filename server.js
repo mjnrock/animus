@@ -29,6 +29,8 @@ let DB = new Database(mssql, config);
 
 let reader = new Query.Read(DB);
 
+console.log(Query.Read.Enums)
+
 reader
     .SetSchema("ImageDB")
     .Select("t0.ETrackID", "t1.Name AS SequenceName")

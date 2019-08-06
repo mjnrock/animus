@@ -2,7 +2,6 @@ class Query {
     constructor(db, ops = {}) {
         this._database = db;
         this._operations = ops;
-        this._enums = {};
         this._defaults = {
             schema: "dbo"
         };
@@ -15,6 +14,8 @@ class Query {
     }
 }
 
+Query.Enums = {};
+
 class Read extends Query {
     constructor(db, schema = "dbo") {
         super(db, {
@@ -24,16 +25,6 @@ class Read extends Query {
         });
 
         this.SetSchema(schema);
-
-        this._enums = {
-            ...this._enums,
-            JoinTypes: {
-                Inner: "INNER JOIN",
-                Left: "LEFT JOIN",
-                Right: "RIGHT JOIN",
-                Outer: "OUTER JOIN"
-            }
-        };
     }
 
     Reset() {
@@ -110,18 +101,28 @@ class Read extends Query {
     }
 
     InnerJoin(table, lcol, rcol, schema = null) {
-        return this.Join(this._enums.JoinTypes.Inner, table, lcol, rcol, schema);
+        return this.Join(Read.Enums.JoinTypes.Inner, table, lcol, rcol, schema);
     }
     LeftJoin(table, lcol, rcol, schema = null) {
-        return this.Join(this._enums.JoinTypes.Inner, table, lcol, rcol, schema);
+        return this.Join(Read.Enums.JoinTypes.Inner, table, lcol, rcol, schema);
     }
     RightJoin(table, lcol, rcol, schema = null) {
-        return this.Join(this._enums.JoinTypes.Inner, table, lcol, rcol, schema);
+        return this.Join(Read.Enums.JoinTypes.Inner, table, lcol, rcol, schema);
     }
     OuterJoin(table, lcol, rcol, schema = null) {
-        return this.Join(this._enums.JoinTypes.Inner, table, lcol, rcol, schema);
+        return this.Join(Read.Enums.JoinTypes.Inner, table, lcol, rcol, schema);
     }
 }
+
+Read.Enums = {
+    ...Query.Enums,
+    JoinTypes: {
+        Inner: "INNER JOIN",
+        Left: "LEFT JOIN",
+        Right: "RIGHT JOIN",
+        Outer: "OUTER JOIN"
+    }
+};
 
 export default {
     Query,
