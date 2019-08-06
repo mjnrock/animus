@@ -1,7 +1,8 @@
-import APIModule from "./api/API";
-import Animus from "./modules/animus/package";
+// import APIModule from "./api/API";
+// import Animus from "./modules/animus/package";
 
 import Database from "./modules/database/Database";
+import Query from "./modules/database/meta/Query";
 import Table from "./modules/database/Table";
 
 const express = require(`express`);
@@ -24,14 +25,25 @@ const config = {
 
 //!	Once the Database connections, it should hold every table under the Schema in its this._context and create a new Table() for each, pushing the data into Table's this._data
 let DB = new Database(mssql, config);
-let tbl = new Table(DB, "ImageDB", "Camera");
+// let tbl = new Table(DB, "ImageDB", "Camera");
 
-setTimeout(() => {
-	tbl.Update([
-		[ "X", 0 ],
-		[ "Pitch" , 0 ]
-	], { callback: (data) => console.log(data) });
-}, 2000)
+let reader = new Query.Read(DB);
+
+reader
+    .SetSchema("ImageDB")
+    .Select("t0.ETrackID", "t1.Name AS SequenceName")
+    .From("ETrack")
+    .InnerJoin("ESequence", "t0.ESequenceID", "t1.ESequenceID")
+    .Exec(data => console.log(data));
+
+// setTimeout(() => {
+//     let reader = new Query.Read(DB);
+
+//     reader
+//         .Select()
+//         .From("Camera", "ImageDB")
+//         .Exec(data => console.log(data));
+// }, 2000)
 
 // (async () => {
 // 	let t = await DB.Pull("Camera", { where: `CameraID = 2` });
@@ -73,75 +85,75 @@ setTimeout(() => {
 //     dataTick();
 // }, 500);
 
-const game = Animus._.init({});
-game.message.Receive(Animus.Message("file", "bob", "cat"));
-game.message.Receive(Animus.Message("file", "cat", "cheese"));
-game.message.Dispatch();
+// const game = Animus._.init({});
+// game.message.Receive(Animus.Message("file", "bob", "cat"));
+// game.message.Receive(Animus.Message("file", "cat", "cheese"));
+// game.message.Dispatch();
 
-app
-    .prepare()
-    .then(() => {        
-        const server = express(),
-            ws = expressWS(server),
-            eApp = ws.app;
+// app
+//     .prepare()
+//     .then(() => {        
+//         const server = express(),
+//             ws = expressWS(server),
+//             eApp = ws.app;
 
-        server.get("/file", (req, res) => {        
-            res.setHeader("Access-Control-Allow-Origin", "*");
-            res.set("Content-Type", "Application/text");
-        });
+//         server.get("/file", (req, res) => {        
+//             res.setHeader("Access-Control-Allow-Origin", "*");
+//             res.set("Content-Type", "Application/text");
+//         });
 
-        server.get(`/p/:id`, (req, res) => {
-            const actualPage = `/post`;
-            const queryParams = { id: req.params.id, time: Date.now() };
-            app.render(req, res, actualPage, queryParams);
-        });
+//         server.get(`/p/:id`, (req, res) => {
+//             const actualPage = `/post`;
+//             const queryParams = { id: req.params.id, time: Date.now() };
+//             app.render(req, res, actualPage, queryParams);
+//         });
 
-        server.get("/main", (req, res) => {
-            const parsedUrl = parse(req.url, true);
-            const { pathname, query } = parsedUrl;
+//         server.get("/main", (req, res) => {
+//             const parsedUrl = parse(req.url, true);
+//             const { pathname, query } = parsedUrl;
 
-            console.log(Animus);
+//             console.log(Animus);
 
-            app.render(req, res, "/main", Animus);
-        });
+//             app.render(req, res, "/main", Animus);
+//         });
         
-        server.get("/api/validate", (req, res) => {
-            res.setHeader("Access-Control-Allow-Origin", "*");
-            res.set("Content-Type", "Application/json");
+//         server.get("/api/validate", (req, res) => {
+//             res.setHeader("Access-Control-Allow-Origin", "*");
+//             res.set("Content-Type", "Application/json");
             
-            res.send(JSON.stringify({
-                api_test: Date.now(),
-                api_child_test: {
-                    child1: Date.now() + (Math.random() * 1000),
-                    child2: Date.now() + (Math.random() * 1000),
-                    child3: Date.now() + (Math.random() * 1000)
-                }
-            }));
-		});
+//             res.send(JSON.stringify({
+//                 api_test: Date.now(),
+//                 api_child_test: {
+//                     child1: Date.now() + (Math.random() * 1000),
+//                     child2: Date.now() + (Math.random() * 1000),
+//                     child3: Date.now() + (Math.random() * 1000)
+//                 }
+//             }));
+// 		});
 		
-		server.get("/api/*", async (req, res) => {
-			try {
-				res.setHeader("Content-Type", "application/json");
+// 		server.get("/api/*", async (req, res) => {
+// 			try {
+// 				res.setHeader("Content-Type", "application/json");
 		
-				let result = await API.Handle(req, res);
+// 				let result = await API.Handle(req, res);
 		
-				res.json(result);
-			} catch (e) {
-				res.status(500);
-				res.send(e.message);
-			}
-		});
+// 				res.json(result);
+// 			} catch (e) {
+// 				res.status(500);
+// 				res.send(e.message);
+// 			}
+// 		});
 
-        server.get(`*`, (req, res) => {
-            return handle(req, res);
-        });
+//         server.get(`*`, (req, res) => {
+//             return handle(req, res);
+//         });
 
-        server.listen(3000, err => {
-            if (err) throw err;
-            console.log(`> Ready on http://localhost:3000`);
-        });
-    })
-    .catch(ex => {
-        console.error(ex.stack);
-        process.exit(1);
-    });
+//         server.listen(3000, err => {
+//             if (err) throw err;
+//             console.log(`> Ready on http://localhost:3000`);
+//         });
+//     })
+//     .catch(ex => {
+//         console.error(ex.stack);
+//         process.exit(1);
+//     });
