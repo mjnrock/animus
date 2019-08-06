@@ -3,7 +3,8 @@ class Query {
         this._database = db;
         this._operations = ops;
         this._defaults = {
-            schema: "dbo"
+            schema: "dbo",
+            table: null
         };
     }
 
@@ -11,6 +12,15 @@ class Query {
         this._defaults.schema = schema;
 
         return this;
+    }
+    SetTable(table) {
+        this._defaults.table = table;
+
+        return this;
+    }
+
+    QuoteName(schema, object) {
+        return `[${ schema }].[${ object }]`;
     }
 }
 
@@ -36,6 +46,14 @@ class Read extends Query {
     }
 
     Construct() {
+        if(this._operations.from === null || this._operations.from === void 0) {
+            if(this._defaults.table === null || this._defaults.table === void 0) {
+                throw new Error("FROM clause and default table are both empty");
+            } else {
+                this._operations.from = this.QuoteName(this._defaults.schema, this._defaults.table);
+            }
+        }
+
         let ai = 0;
         let query = `
 			SELECT
@@ -47,7 +65,7 @@ class Read extends Query {
         this._operations.joins.forEach(obj => {
             ai++;
             query += `
-                ${ obj.type } [${ obj.schema }].[${ obj.table }] t${ ai } WITH (NOLOCK)
+                ${ obj.type } ${ this.QuoteName(obj.schema, obj.table) } t${ ai } WITH (NOLOCK)
                     ON ${ obj.lcol } = ${ obj.rcol }
             `;
         });
@@ -75,7 +93,7 @@ class Read extends Query {
             schema = this._defaults.schema;
         }
 
-        this._operations.from = `[${ schema }].[${ table }]`;
+        this._operations.from = this.QuoteName(schema, table);
 
         return this;
     }
@@ -127,4 +145,4 @@ Read.Enums = {
 export default {
     Query,
     Read
-}
+};
