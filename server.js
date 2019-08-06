@@ -28,15 +28,31 @@ let DB = new Database(mssql, config);
 // let tbl = new Table(DB, "ImageDB", "Camera");
 
 let reader = new Query.Read(DB);
-
-console.log(Query.Read.Enums)
+let creater = new Query.Create(DB);
 
 reader
-    .SetSchema("ImageDB")
+    .SetDefaultSchema("ImageDB")
     .Select("t0.ETrackID", "t1.Name AS SequenceName")
     .From("ETrack")
     .InnerJoin("ESequence", "t0.ESequenceID", "t1.ESequenceID")
     .Exec(data => console.log(data));
+
+creater
+    .SetDefaultSchema("ImageDB")
+    .Insert("Camera")
+    .Columns("Pitch", "Yaw", "Roll")
+    .Values(
+        [ 1, 2, 3],
+        [ 4, 4, 7],
+        [ 9, 5, 5]
+    )
+    .Exec(data => console.log(data));
+
+
+
+
+
+
 
 // setTimeout(() => {
 //     let reader = new Query.Read(DB);

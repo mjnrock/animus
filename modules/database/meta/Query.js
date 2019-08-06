@@ -8,26 +8,34 @@ class Query {
         };
     }
 
-    SetSchema(schema = "dbo") {
+    SetDefaultSchema(schema = "dbo") {
         this._defaults.schema = schema;
 
         return this;
     }
-    SetTable(table) {
+    SetDefaultTable(table) {
         this._defaults.table = table;
 
         return this;
     }
 
-    QuoteName(schema, object, database = null, server = null) {
-        //*  MSSQL
-        let syntax = `[${ schema }].[${ object }]`;
+    async Exec(query, callback = null) {
+        return await this._database.Query(query, callback);
+    }
 
-        if(database !== null && database !== void 0) {
-            syntax = `[${ database }].${ syntax }`;
+    QuoteName(object, schema = null, database = null, server = null) {
+        //*  MSSQL
+        let syntax = `[${ object }]`;
+
+        if(schema !== null && schema !== void 0) {
+            syntax = `[${ schema }].${ syntax }`;
             
-            if(server !== null && server !== void 0) {
-                syntax = `[${ server }].${ syntax }`;
+            if(database !== null && database !== void 0) {
+                syntax = `[${ database }].${ syntax }`;
+                
+                if(server !== null && server !== void 0) {
+                    syntax = `[${ server }].${ syntax }`;
+                }
             }
         }
 
@@ -51,7 +59,7 @@ class Read extends Query {
             joins: []
         });
 
-        this.SetSchema(schema);
+        this.SetDefaultSchema(schema);
     }
 
     Reset() {
@@ -67,31 +75,24 @@ class Read extends Query {
             if(this._defaults.table === null || this._defaults.table === void 0) {
                 throw new Error("FROM clause and default table are both empty");
             } else {
-                this._operations.from = this.QuoteName(this._defaults.schema, this._defaults.table);
+                this._operations.from = this.QuoteName(this._defaults.table, this._defaults.schema);
             }
         }
 
         let ai = 0;
-        let query = `
-			SELECT
-                ${ this._operations.select }
-			FROM
-				${ this._operations.from } t${ ai } WITH (NOLOCK)
-        `;
+        let query = `SELECT \n\t${ this._operations.select } \nFROM \n\t${ this._operations.from } t${ ai } WITH (NOLOCK)`;
         
         this._operations.joins.forEach(obj => {
             ai++;
-            query += `
-                ${ obj.type } ${ this.QuoteName(obj.schema, obj.table) } t${ ai } WITH (NOLOCK)
-                    ON ${ obj.lcol } = ${ obj.rcol }
-            `;
+            query += `\n\t${ obj.type } ${ this.QuoteName(obj.table, obj.schema) } t${ ai } WITH (NOLOCK) \n\t\tON ${ obj.lcol } = ${ obj.rcol }`;
         });
 
-        return query;
+        return `${ query };`;
     }
 
-    async Exec(callback = null) {
-        return await this._database.Query(this.Construct(), callback);
+    async Exec(callback) {
+        return await callback(this.Construct());
+        return await Query.prototype.Exec.call(this, this.Construct(), callback);
     }
 
     Select(...cols) {
@@ -100,7 +101,7 @@ class Read extends Query {
         if(cols.length === 0) {
             this._operations.select = "*";
         } else {
-            this._operations.select = cols.join(",");
+            this._operations.select = cols.join(",\n\t");
         }
 
         return this;
@@ -110,7 +111,7 @@ class Read extends Query {
             schema = this._defaults.schema;
         }
 
-        this._operations.from = this.QuoteName(schema, table);
+        this._operations.from = this.QuoteName(table, schema);
 
         return this;
     }
@@ -159,7 +160,78 @@ Read.Enums = {
     }
 };
 
+
+class Create extends Query {
+    constructor(db, schema = "dbo") {
+        super(db, {
+            table: null,
+            columns: [],
+            values: []
+        });
+
+        this.SetDefaultSchema(schema);
+    }
+
+    Reset() {
+        this._operations.table = null;
+        this._operations.columns = [];
+        this._operations.values = [];
+
+        return this;
+    }
+
+    Construct() {
+        let query = `INSERT INTO ${ this._operations.table }`;
+
+        if(this._operations.columns.length > 0) {
+            query += ` (${ this._operations.columns.join(", ") })`;
+        }
+
+        if(this._operations.values.length > 0) {
+            query += `\nVALUES`;
+
+            let values = [];
+            this._operations.values.forEach(vals => {
+                values.push(`(${ vals.join(",") })`);
+            });
+            query += `\n\t${ values.join(",\n\t") }`;
+        }
+
+        return `${ query };`;
+    }
+
+    async Exec(callback) {
+        return await callback(this.Construct());
+        return await Query.prototype.Exec.call(this, this.Construct(), callback);
+    }
+
+    Insert(table, schema = null) {
+        if(schema === null || schema === void 0) {
+            schema = this._defaults.schema;
+        }
+
+        this._operations.table = this.QuoteName(table, schema);
+
+        return this;
+    }
+
+    Columns(...cols) {
+        cols.forEach(col => {
+            this._operations.columns.push(this.QuoteName(col));
+        });
+
+        return this;
+    }
+
+    Values(...vals) {
+        this._operations.values = vals;
+
+        return this;
+    }
+}
+
 export default {
     Query,
-    Read
+    Read,
+    Create
 };
