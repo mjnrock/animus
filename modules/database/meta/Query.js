@@ -19,12 +19,29 @@ class Query {
         return this;
     }
 
-    QuoteName(schema, object) {
-        return `[${ schema }].[${ object }]`;
+    QuoteName(schema, object, database = null, server = null) {
+        //*  MSSQL
+        let syntax = `[${ schema }].[${ object }]`;
+
+        if(database !== null && database !== void 0) {
+            syntax = `[${ database }].${ syntax }`;
+            
+            if(server !== null && server !== void 0) {
+                syntax = `[${ server }].${ syntax }`;
+            }
+        }
+
+        return syntax;
     }
 }
 
-Query.Enums = {};
+Query.Enums = {
+    DatabaseType: {
+        MSSQL: "MSSQL",
+        Oracle: "ORACLE",
+        MySQL: "MYSQL"
+    }
+};
 
 class Read extends Query {
     constructor(db, schema = "dbo") {
@@ -119,22 +136,22 @@ class Read extends Query {
     }
 
     InnerJoin(table, lcol, rcol, schema = null) {
-        return this.Join(Read.Enums.JoinTypes.Inner, table, lcol, rcol, schema);
+        return this.Join(Read.Enums.JoinType.Inner, table, lcol, rcol, schema);
     }
     LeftJoin(table, lcol, rcol, schema = null) {
-        return this.Join(Read.Enums.JoinTypes.Inner, table, lcol, rcol, schema);
+        return this.Join(Read.Enums.JoinType.Inner, table, lcol, rcol, schema);
     }
     RightJoin(table, lcol, rcol, schema = null) {
-        return this.Join(Read.Enums.JoinTypes.Inner, table, lcol, rcol, schema);
+        return this.Join(Read.Enums.JoinType.Inner, table, lcol, rcol, schema);
     }
     OuterJoin(table, lcol, rcol, schema = null) {
-        return this.Join(Read.Enums.JoinTypes.Inner, table, lcol, rcol, schema);
+        return this.Join(Read.Enums.JoinType.Inner, table, lcol, rcol, schema);
     }
 }
 
 Read.Enums = {
     ...Query.Enums,
-    JoinTypes: {
+    JoinType: {
         Inner: "INNER JOIN",
         Left: "LEFT JOIN",
         Right: "RIGHT JOIN",
