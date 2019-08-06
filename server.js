@@ -2,8 +2,8 @@
 // import Animus from "./modules/animus/package";
 
 import Database from "./modules/database/Database";
-import Query from "./modules/database/meta/Query";
 import Table from "./modules/database/Table";
+import Meta from "./modules/database/meta/package";
 
 const express = require(`express`);
 const next = require(`next`);
@@ -27,8 +27,8 @@ const config = {
 let DB = new Database(mssql, config);
 // let tbl = new Table(DB, "ImageDB", "Camera");
 
-let reader = new Query.Read(DB);
-let creater = new Query.Create(DB);
+let reader = new Meta.QueryRead(DB);
+let creater = new Meta.QueryCreate(DB);
 
 reader
     .SetDefaultSchema("ImageDB")
@@ -55,12 +55,6 @@ creater
 
 
 // setTimeout(() => {
-//     let reader = new Query.Read(DB);
-
-//     reader
-//         .Select()
-//         .From("Camera", "ImageDB")
-//         .Exec(data => console.log(data));
 // }, 2000)
 
 // (async () => {
